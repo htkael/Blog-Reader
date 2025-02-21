@@ -1,31 +1,32 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { signup } from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { login } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
-const Signup = () => {
+const Login = () => {
+  const { setIsAuthenticated, setUser } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConf, setPasswordConf] = useState("");
   const [error, setError] = useState([]);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await signup(username, password, passwordConf);
+      const data = await login(username, password);
       if (data.errors) {
-        console.log("errors found");
         const errorMessages = data.errors.map((err) => err.msg || err);
         setError(errorMessages);
         return;
-      } else {
-        console.log("Signup Successful", data);
-        navigate("/login");
       }
+      console.log("Login Successful");
+      setIsAuthenticated(true);
+      setUser(data.user);
+      console.log("User", data.user);
+      navigate("/homepage");
     } catch (err) {
-      setError(
-        err.response?.data?.message || err.message || "Failed to signup"
-      );
+      setError(err.response?.data?.message || err.message || "Failed to login");
     }
   };
 
@@ -34,7 +35,7 @@ const Signup = () => {
       <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title justify-center text-2xl font-bold">
-            Sign Up
+            Log In
           </h2>
 
           {error.length > 0 && (
@@ -53,55 +54,37 @@ const Signup = () => {
                 <span className="label-text">Username</span>
               </label>
               <input
-                type="text"
-                placeholder="Enter username"
                 className="input input-bordered w-full"
+                type="text"
+                name="username"
+                id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                name="username"
                 required
               />
             </div>
-
             <div className="form-control flex flex-col gap-2">
               <label htmlFor="password" className="label">
                 <span className="label-text">Password</span>
               </label>
               <input
-                type="password"
-                placeholder="Enter password"
                 className="input input-bordered w-full"
+                type="password"
+                name="password"
+                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                name="password"
                 required
               />
             </div>
-
-            <div className="form-control flex flex-col gap-2">
-              <label htmlFor="password_conf" className="label">
-                <span className="label-text">Confirm Password</span>
-              </label>
-              <input
-                type="password"
-                placeholder="Confirm password"
-                className="input input-bordered w-full"
-                value={passwordConf}
-                onChange={(e) => setPasswordConf(e.target.value)}
-                name="password_conf"
-                required
-              />
-            </div>
-
             <div className="form-control mt-6">
               <button className="btn btn-primary">Sign Up</button>
             </div>
           </form>
-
           <div className="text-center mt-4">
-            Already have an account?{" "}
-            <Link to="/login" className="link link-primary">
-              Log In
+            Don&apos;t have an account?{" "}
+            <Link to="/signup" className="link link-primary">
+              Sign Up
             </Link>
           </div>
         </div>
@@ -110,4 +93,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;

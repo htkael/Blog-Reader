@@ -22,3 +22,21 @@ export const signup = async (username, password, password_conf) => {
     throw err.response ? err.response.data : { message: "Network error" };
   }
 };
+
+export const login = async (username, password) => {
+  try {
+    const response = await api.post("/auth/login", {
+      username,
+      password,
+    });
+    if (response.data.token) {
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+    }
+    console.log("Response:", response);
+    return response.data;
+  } catch (err) {
+    console.log("Login Error details:", err.response?.data || err);
+    return err.response?.data || { message: "Failed to login" };
+  }
+};
