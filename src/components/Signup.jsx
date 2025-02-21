@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signup } from "../services/api";
-import "../index.css";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -14,13 +13,15 @@ const Signup = () => {
     e.preventDefault();
     try {
       const data = await signup(username, password, passwordConf);
-      if (data.erros) {
+      if (data.errors) {
+        console.log("errors found");
         const errorMessages = data.errors.map((err) => err.msg || err);
         setError(errorMessages);
         return;
+      } else {
+        console.log("Signup Successful", data);
+        navigate("/login");
       }
-      console.log("Signup Successful", data);
-      navigate("/login");
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Failed to signup"
@@ -29,17 +30,17 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="card w-96 bg-white shadow-xl">
+    <div className="min-h-screen bg-base-200 flex items-center justify-center">
+      <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title justify-center text-2xl font-bold">
             Sign Up
           </h2>
 
-          {error && (
-            <ul className="alert alert-error">
+          {error.length > 0 && (
+            <ul className="alert alert-error flex flex-col justify-center">
               {error.map((errorMsg, index) => (
-                <li key={index} className="text-sm">
+                <li key={index} className="text-sm list-disc list-inside">
                   {errorMsg}
                 </li>
               ))}
@@ -48,46 +49,46 @@ const Signup = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="form-control">
-              <label className="label">
+              <label htmlFor="usernmae" className="label">
                 <span className="label-text">Username</span>
               </label>
               <input
                 type="text"
-                name="username"
-                id="username"
+                placeholder="Enter username"
+                className="input input-bordered w-full"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="input input-bordered w-full"
+                name="username"
                 required
               />
             </div>
 
             <div className="form-control">
-              <label className="label">
+              <label htmlFor="password" className="label">
                 <span className="label-text">Password</span>
               </label>
               <input
                 type="password"
-                name="password"
-                id="password"
+                placeholder="Enter password"
+                className="input input-bordered w-full"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input input-bordered w-full"
+                name="password"
                 required
               />
             </div>
 
             <div className="form-control">
-              <label className="label">
+              <label htmlFor="password_conf" className="label">
                 <span className="label-text">Confirm Password</span>
               </label>
               <input
                 type="password"
-                name="password_conf"
-                id="password_conf"
+                placeholder="Confirm password"
+                className="input input-bordered w-full"
                 value={passwordConf}
                 onChange={(e) => setPasswordConf(e.target.value)}
-                className="input input-bordered w-full"
+                name="password_conf"
                 required
               />
             </div>
