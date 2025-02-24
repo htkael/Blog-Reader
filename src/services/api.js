@@ -31,7 +31,7 @@ export const login = async (username, password) => {
     });
     if (response.data.token) {
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user.username));
+      localStorage.setItem("user", JSON.stringify(response.data.user));
     }
     console.log("Response:", response);
     return response.data;
@@ -124,5 +124,23 @@ export const postComment = async (id, content) => {
         message: `Failed to comment on post with id: ${id} and content: ${content}`,
       }
     );
+  }
+};
+
+export const deleteComment = async (id, commentId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await api.delete(
+      `/posts/${id}/comments/${commentId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    return err.response?.data || { message: "Failed to delete comment" };
   }
 };

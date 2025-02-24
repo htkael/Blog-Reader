@@ -3,7 +3,10 @@ import { useParams } from "react-router-dom";
 import { getSinglePost } from "../services/api";
 import Navbar from "./Navbar";
 import { likePost } from "../services/api";
-import { postComment } from "../services/api";
+import { postComment, deleteComment } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const Post = () => {
   const [post, setPost] = useState({});
@@ -13,6 +16,8 @@ const Post = () => {
   const [isLiked, setIsLiked] = useState();
   const [modalOpen, setModalOpen] = useState(false);
   const [comment, setComment] = useState("");
+  const { user } = useAuth();
+  console.log("User", user);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -35,6 +40,15 @@ const Post = () => {
       setIsLiked(true);
     } else {
       return;
+    }
+  };
+
+  const removeComment = async (id) => {
+    try {
+      const data = await deleteComment(id);
+      console.log("Comment deleted", data);
+    } catch (err) {
+      setError(err.message || "Failed to delete comment");
     }
   };
 
@@ -82,8 +96,8 @@ const Post = () => {
             <div className="flex items-center gap-3 mb-6">
               <div className="flex items-center gap-2">
                 <div className="avatar placeholder">
-                  <div className="bg-neutral text-neutral-content rounded-full w-8">
-                    <span className="text-xs">
+                  <div className="bg-neutral text-neutral-content text-center rounded-full w-8">
+                    <span className="text-s">
                       {post.author.username.slice(0, 2).toUpperCase()}
                     </span>
                   </div>
@@ -124,7 +138,7 @@ const Post = () => {
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <div className="avatar placeholder">
-                        <div className="bg-neutral text-neutral-content rounded-full w-6">
+                        <div className="bg-neutral text-neutral-content text-center rounded-full w-6">
                           <span className="text-xs">
                             {comment.author.username.slice(0, 2).toUpperCase()}
                           </span>
@@ -137,7 +151,17 @@ const Post = () => {
                         {new Date(comment.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                    <p>{comment.content}</p>
+                    <div className="flex justify-between">
+                      <p>{comment.content}</p>
+                      {comment.authorId === user.id && (
+                        <button
+                          onClick={() => removeComment(comment.id)}
+                          className="hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-in-out"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
