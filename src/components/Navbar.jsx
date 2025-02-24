@@ -12,8 +12,6 @@ const Navbar = () => {
     setUser(null);
     navigate("/login");
   };
-  const username = localStorage.getItem("user");
-  console.log("User found!", username);
 
   return (
     <div className="navbar bg-gray-700">

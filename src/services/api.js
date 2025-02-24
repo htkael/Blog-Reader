@@ -57,3 +57,72 @@ export const getPosts = async () => {
     return err.response?.data || { message: "Failed to fetch posts" };
   }
 };
+
+export const getSinglePost = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return { error: { message: "User not authorized" } };
+    }
+    const response = await api.get(`/posts/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (err) {
+    return (
+      err.response?.data || { message: "Failed to fetch post with id", id }
+    );
+  }
+};
+
+export const likePost = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log("id", id);
+    if (!token) {
+      return { error: { message: "User not authorized" } };
+    }
+    const response = await api.post(
+      `/posts/${id}/like`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response);
+    return response.data;
+  } catch (err) {
+    return (
+      err.response?.data || { message: "Failed to fetch post with id", id }
+    );
+  }
+};
+
+export const postComment = async (id, content) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await api.post(
+      `/posts/${id}/comments`,
+      {
+        id,
+        content,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    return (
+      err.response?.data || {
+        message: `Failed to comment on post with id: ${id} and content: ${content}`,
+      }
+    );
+  }
+};
