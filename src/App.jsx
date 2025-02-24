@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import "./index.css";
+import Homepage from "./components/Homepage";
 
 function App() {
   return (
@@ -12,6 +13,14 @@ function App() {
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/homepage"
+            element={
+              <ProtectedRoute>
+                <Homepage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

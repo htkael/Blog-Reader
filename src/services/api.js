@@ -31,12 +31,29 @@ export const login = async (username, password) => {
     });
     if (response.data.token) {
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("user", JSON.stringify(response.data.user.username));
     }
     console.log("Response:", response);
     return response.data;
   } catch (err) {
     console.log("Login Error details:", err.response?.data || err);
     return err.response?.data || { message: "Failed to login" };
+  }
+};
+
+export const getPosts = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return { error: { message: "User not authorized" } };
+    }
+    const response = await api.get("/posts", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (err) {
+    return err.response?.data || { message: "Failed to fetch posts" };
   }
 };
